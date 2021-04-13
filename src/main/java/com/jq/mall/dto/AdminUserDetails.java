@@ -1,7 +1,7 @@
-package com.jq.mall.bo;
+package com.jq.mall.dto;
 
 import com.jq.mall.mbg.model.UmsAdmin;
-import com.jq.mall.mbg.model.UmsResource;
+import com.jq.mall.mbg.model.UmsPermission;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,20 +13,21 @@ import java.util.stream.Collectors;
 public class AdminUserDetails implements UserDetails {
 
     private final UmsAdmin admin;
-    private final List<UmsResource> resourceList;
+    private final List<UmsPermission> permissionList;
 
-    public AdminUserDetails(UmsAdmin admin, List<UmsResource> resourceList) {
+    public AdminUserDetails(UmsAdmin admin, List<UmsPermission> permissionList) {
         this.admin = admin;
-        this.resourceList = resourceList;
+        this.permissionList= permissionList;
     }
 
     /**
-     * 返回当前用户的角色
+     * 返回当前用户的权限
      */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return resourceList.stream()
-                .map(role -> new SimpleGrantedAuthority(role.getId() + ":" + role.getName()))
+        return permissionList.stream()
+                .filter(permission -> permission.getValue() != null)
+                .map(permission -> new SimpleGrantedAuthority(permission.getValue()))
                 .collect(Collectors.toList());
     }
 

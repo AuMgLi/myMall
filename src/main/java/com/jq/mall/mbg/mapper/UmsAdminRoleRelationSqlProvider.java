@@ -1,69 +1,54 @@
 package com.jq.mall.mbg.mapper;
 
-import com.jq.mall.mbg.model.UmsResource;
-import com.jq.mall.mbg.model.UmsResourceExample.Criteria;
-import com.jq.mall.mbg.model.UmsResourceExample.Criterion;
-import com.jq.mall.mbg.model.UmsResourceExample;
+import com.jq.mall.mbg.model.UmsAdminRoleRelation;
+import com.jq.mall.mbg.model.UmsAdminRoleRelationExample.Criteria;
+import com.jq.mall.mbg.model.UmsAdminRoleRelationExample.Criterion;
+import com.jq.mall.mbg.model.UmsAdminRoleRelationExample;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
 import java.util.Map;
 import org.apache.ibatis.jdbc.SQL;
 
-public class UmsResourceSqlProvider {
-    public String countByExample(UmsResourceExample example) {
+public class UmsAdminRoleRelationSqlProvider {
+    public String countByExample(UmsAdminRoleRelationExample example) {
         SQL sql = new SQL();
-        sql.SELECT("count(*)").FROM("ums_resource");
+        sql.SELECT("count(*)").FROM("ums_admin_role_relation");
         applyWhere(sql, example, false);
         return sql.toString();
     }
 
-    public String deleteByExample(UmsResourceExample example) {
+    public String deleteByExample(UmsAdminRoleRelationExample example) {
         SQL sql = new SQL();
-        sql.DELETE_FROM("ums_resource");
+        sql.DELETE_FROM("ums_admin_role_relation");
         applyWhere(sql, example, false);
         return sql.toString();
     }
 
-    public String insertSelective(UmsResource record) {
+    public String insertSelective(UmsAdminRoleRelation record) {
         SQL sql = new SQL();
-        sql.INSERT_INTO("ums_resource");
+        sql.INSERT_INTO("ums_admin_role_relation");
         
-        if (record.getCreateTime() != null) {
-            sql.VALUES("create_time", "#{createTime,jdbcType=TIMESTAMP}");
+        if (record.getAdminId() != null) {
+            sql.VALUES("admin_id", "#{adminId,jdbcType=BIGINT}");
         }
         
-        if (record.getName() != null) {
-            sql.VALUES("name", "#{name,jdbcType=VARCHAR}");
-        }
-        
-        if (record.getUrl() != null) {
-            sql.VALUES("url", "#{url,jdbcType=VARCHAR}");
-        }
-        
-        if (record.getDescription() != null) {
-            sql.VALUES("description", "#{description,jdbcType=VARCHAR}");
-        }
-        
-        if (record.getCategoryId() != null) {
-            sql.VALUES("category_id", "#{categoryId,jdbcType=BIGINT}");
+        if (record.getRoleId() != null) {
+            sql.VALUES("role_id", "#{roleId,jdbcType=BIGINT}");
         }
         
         return sql.toString();
     }
 
-    public String selectByExample(UmsResourceExample example) {
+    public String selectByExample(UmsAdminRoleRelationExample example) {
         SQL sql = new SQL();
         if (example != null && example.isDistinct()) {
             sql.SELECT_DISTINCT("id");
         } else {
             sql.SELECT("id");
         }
-        sql.SELECT("create_time");
-        sql.SELECT("name");
-        sql.SELECT("url");
-        sql.SELECT("description");
-        sql.SELECT("category_id");
-        sql.FROM("ums_resource");
+        sql.SELECT("admin_id");
+        sql.SELECT("role_id");
+        sql.FROM("ums_admin_role_relation");
         applyWhere(sql, example, false);
         
         if (example != null && example.getOrderByClause() != null) {
@@ -74,34 +59,22 @@ public class UmsResourceSqlProvider {
     }
 
     public String updateByExampleSelective(Map<String, Object> parameter) {
-        UmsResource record = (UmsResource) parameter.get("record");
-        UmsResourceExample example = (UmsResourceExample) parameter.get("example");
+        UmsAdminRoleRelation record = (UmsAdminRoleRelation) parameter.get("record");
+        UmsAdminRoleRelationExample example = (UmsAdminRoleRelationExample) parameter.get("example");
         
         SQL sql = new SQL();
-        sql.UPDATE("ums_resource");
+        sql.UPDATE("ums_admin_role_relation");
         
         if (record.getId() != null) {
             sql.SET("id = #{record.id,jdbcType=BIGINT}");
         }
         
-        if (record.getCreateTime() != null) {
-            sql.SET("create_time = #{record.createTime,jdbcType=TIMESTAMP}");
+        if (record.getAdminId() != null) {
+            sql.SET("admin_id = #{record.adminId,jdbcType=BIGINT}");
         }
         
-        if (record.getName() != null) {
-            sql.SET("name = #{record.name,jdbcType=VARCHAR}");
-        }
-        
-        if (record.getUrl() != null) {
-            sql.SET("url = #{record.url,jdbcType=VARCHAR}");
-        }
-        
-        if (record.getDescription() != null) {
-            sql.SET("description = #{record.description,jdbcType=VARCHAR}");
-        }
-        
-        if (record.getCategoryId() != null) {
-            sql.SET("category_id = #{record.categoryId,jdbcType=BIGINT}");
+        if (record.getRoleId() != null) {
+            sql.SET("role_id = #{record.roleId,jdbcType=BIGINT}");
         }
         
         applyWhere(sql, example, true);
@@ -110,42 +83,27 @@ public class UmsResourceSqlProvider {
 
     public String updateByExample(Map<String, Object> parameter) {
         SQL sql = new SQL();
-        sql.UPDATE("ums_resource");
+        sql.UPDATE("ums_admin_role_relation");
         
         sql.SET("id = #{record.id,jdbcType=BIGINT}");
-        sql.SET("create_time = #{record.createTime,jdbcType=TIMESTAMP}");
-        sql.SET("name = #{record.name,jdbcType=VARCHAR}");
-        sql.SET("url = #{record.url,jdbcType=VARCHAR}");
-        sql.SET("description = #{record.description,jdbcType=VARCHAR}");
-        sql.SET("category_id = #{record.categoryId,jdbcType=BIGINT}");
+        sql.SET("admin_id = #{record.adminId,jdbcType=BIGINT}");
+        sql.SET("role_id = #{record.roleId,jdbcType=BIGINT}");
         
-        UmsResourceExample example = (UmsResourceExample) parameter.get("example");
+        UmsAdminRoleRelationExample example = (UmsAdminRoleRelationExample) parameter.get("example");
         applyWhere(sql, example, true);
         return sql.toString();
     }
 
-    public String updateByPrimaryKeySelective(UmsResource record) {
+    public String updateByPrimaryKeySelective(UmsAdminRoleRelation record) {
         SQL sql = new SQL();
-        sql.UPDATE("ums_resource");
+        sql.UPDATE("ums_admin_role_relation");
         
-        if (record.getCreateTime() != null) {
-            sql.SET("create_time = #{createTime,jdbcType=TIMESTAMP}");
+        if (record.getAdminId() != null) {
+            sql.SET("admin_id = #{adminId,jdbcType=BIGINT}");
         }
         
-        if (record.getName() != null) {
-            sql.SET("name = #{name,jdbcType=VARCHAR}");
-        }
-        
-        if (record.getUrl() != null) {
-            sql.SET("url = #{url,jdbcType=VARCHAR}");
-        }
-        
-        if (record.getDescription() != null) {
-            sql.SET("description = #{description,jdbcType=VARCHAR}");
-        }
-        
-        if (record.getCategoryId() != null) {
-            sql.SET("category_id = #{categoryId,jdbcType=BIGINT}");
+        if (record.getRoleId() != null) {
+            sql.SET("role_id = #{roleId,jdbcType=BIGINT}");
         }
         
         sql.WHERE("id = #{id,jdbcType=BIGINT}");
@@ -153,7 +111,7 @@ public class UmsResourceSqlProvider {
         return sql.toString();
     }
 
-    protected void applyWhere(SQL sql, UmsResourceExample example, boolean includeExamplePhrase) {
+    protected void applyWhere(SQL sql, UmsAdminRoleRelationExample example, boolean includeExamplePhrase) {
         if (example == null) {
             return;
         }

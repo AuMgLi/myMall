@@ -32,8 +32,26 @@ redis:
       resourceList: "ums:resourceList:"
       authCode: "portal:authCode:"
     expire:
-      common: 86400  # 24 hours
+      common: 86400  # 1 day
       authCode: 120  # 验证码过期时间
 
 jwt:
-  tokenHead: 'Bearer '  #JWT负载中拿到开头
+  tokenHeader: Authorization  # JWT存储的请求头
+  cipher: mall-admin-cipher  # JWT加解密使用的密钥
+  expiration: 86400  # JWT的过期时间 (60*60*24) = 1 day
+  tokenHead: 'Bearer '  # JWT负载中拿到开头
+
+logging:
+  level:
+    ROOT: INFO
+
+rabbitmq:
+  host: localhost
+  port: 5672
+  virtual-host: /mall
+  username: mall
+  password: admin
+  publisher-confirms: true  #如果对异步消息需要回调必须设置为true
+  queue:
+    name:
+      cancelOrder: cancelOrderQueue

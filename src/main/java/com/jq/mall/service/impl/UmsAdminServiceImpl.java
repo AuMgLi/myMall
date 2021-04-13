@@ -1,23 +1,28 @@
 package com.jq.mall.service.impl;
 
-import com.jq.mall.bo.AdminUserDetails;
+import com.jq.mall.dto.AdminUserDetails;
 import com.jq.mall.common.exception.Asserts;
+import com.jq.mall.common.utils.JwtTokenUtil;
+import com.jq.mall.dao.UmsAdminRoleRelationDao;
 import com.jq.mall.dto.UmsAdminParam;
 import com.jq.mall.dto.UpdateAdminPasswordParam;
 import com.jq.mall.mbg.mapper.UmsAdminMapper;
-import com.jq.mall.mbg.model.UmsAdmin;
-import com.jq.mall.mbg.model.UmsAdminExample;
-import com.jq.mall.mbg.model.UmsResource;
+import com.jq.mall.mbg.mapper.UmsAdminRoleRelationMapper;
+import com.jq.mall.mbg.model.*;
 import com.jq.mall.service.UmsAdminCacheService;
 import com.jq.mall.service.UmsAdminService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -31,6 +36,12 @@ public class UmsAdminServiceImpl implements UmsAdminService {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private UmsAdminCacheService adminCacheService;
+    @Autowired
+    private UmsAdminRoleRelationDao adminRoleRelationDao;
+    @Autowired
+    private UmsAdminRoleRelationMapper adminRoleRelationMapper;
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
 
     /**
      * 根据用户名获取后台管理员
@@ -102,8 +113,12 @@ public class UmsAdminServiceImpl implements UmsAdminService {
             if (!userDetails.isEnabled()) {
                 Asserts.fail("账号已被禁用");
             }
-            // Todo Token
-            token = "Hello Kitty!";
+            // Token
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                    userDetails, null, userDetails.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            token = jwtTokenUtil.generateToken(userDetails);
+            log.info("Token: {}", token);
         } catch (Exception e) {
             log.warn("登录异常:{}", e.getMessage());
         }
@@ -155,20 +170,57 @@ public class UmsAdminServiceImpl implements UmsAdminService {
     public UserDetails getUserDetailsByUsername(String username) {
         UmsAdmin admin = getAdminByUsername(username);
         if (admin != null) {
-//            List<UmsResource> resourceList = getR; TODO
-            return new AdminUserDetails(admin, null);
+            List<UmsPermission> permissionList = getPermissionList(admin.getId());
+            return new AdminUserDetails(admin, permissionList);
         }
         throw new UsernameNotFoundException("用户名或密码错误");
     }
 
     /**
-     * 获取指定用户的可访问资源
+     * 刷新token的功能
+     * @param oldToken 旧Token
      */
     @Override
-    public List<UmsResource> getResourceList(Long adminId) {
-//        List<UmsResource> resourceList = adminCacheService.getResourceList(adminId);  Todo
-
-        return null;
+    public String refreshToken(String oldToken) {
+        return jwtTokenUtil.refreshToken(oldToken);
     }
 
+    /**
+     * 获取指定用户的权限
+     */
+    @Override
+    public List<UmsPermission> getPermissionList(Long adminId) {
+        return adminRoleRelationDao.getPermissionList(adminId);
+    }
+
+    /**
+     * 获取指定用户的角色
+     */
+    public List<UmsRole> getRoleList(Long adminId) {
+        return adminRoleRelationDao.getRoleList(adminId);
+    }
+
+    /**
+     * 修改用户角色关系
+     */
+    @Override
+    public int updateRole(Long adminId, List<Long> roleIds) {
+        int roleCount = roleIds == null ? 0 : roleIds.size();
+        // 先删除原来的关系
+        UmsAdminRoleRelationExample adminRoleRelationExample = new UmsAdminRoleRelationExample();
+        adminRoleRelationExample.createCriteria().andAdminIdEqualTo(adminId);
+        adminRoleRelationMapper.deleteByExample(adminRoleRelationExample);
+        // 建立新关系
+        if (!CollectionUtils.isEmpty(roleIds)) {
+            List<UmsAdminRoleRelation> adminRoleRelations = new ArrayList<>();
+            for (Long roleId : roleIds) {
+                UmsAdminRoleRelation adminRoleRelation = new UmsAdminRoleRelation();
+                adminRoleRelation.setAdminId(adminId);
+                adminRoleRelation.setRoleId(roleId);
+                adminRoleRelations.add(adminRoleRelation);
+            }
+            adminRoleRelationDao.insertAdminRoleRelations(adminRoleRelations);
+        }
+        return roleCount;
+    }
 }

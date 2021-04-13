@@ -38,7 +38,9 @@ public class SwaggerConfig {
                 .select()
                 .apis(RequestHandlerSelectors.basePackage(swaggerProperties.getApiBasePackage()))
                 .paths(PathSelectors.any())
-                .build();
+                .build()
+                .securitySchemes(securitySchemes())
+                .securityContexts(securityContexts());
         if (swaggerProperties.isEnableSecurity()) {
             docket.securitySchemes(securitySchemes()).securityContexts(securityContexts());
         }

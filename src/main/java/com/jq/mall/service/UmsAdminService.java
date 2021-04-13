@@ -3,8 +3,8 @@ package com.jq.mall.service;
 import com.jq.mall.dto.UmsAdminParam;
 import com.jq.mall.dto.UpdateAdminPasswordParam;
 import com.jq.mall.mbg.model.UmsAdmin;
-import com.jq.mall.mbg.model.UmsResource;
-import org.apache.ibatis.annotations.Update;
+import com.jq.mall.mbg.model.UmsPermission;
+import com.jq.mall.mbg.model.UmsRole;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,25 +60,26 @@ public interface UmsAdminService {
      */
     UserDetails getUserDetailsByUsername(String username);  // Todo 用户 or Admin?
 
-
-    // TODO
     /**
      * 刷新token的功能
      * @param oldToken 旧的token
      */
+    String refreshToken(String oldToken);
 
     /**
-     * 修改用户角色关系
-     */
-//    @Transactional
-//    int updateRole(Long adminId, List<Long> roleIds);
+     * 获取用户所有权限（包括角色权限和+-权限）
+     * */
+    List<UmsPermission> getPermissionList(Long adminId);
 
     /**
      * 获取用户对应角色
      */
+    List<UmsRole> getRoleList(Long adminId);
 
     /**
-     * 获取指定用户的可访问资源
-     * */
-     List<UmsResource> getResourceList(Long adminId);
+     * 修改用户角色关系
+     */
+    @Transactional
+    int updateRole(Long adminId, List<Long> roleIds);
+
 }
