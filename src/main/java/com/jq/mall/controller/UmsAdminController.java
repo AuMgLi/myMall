@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Api(tags = "UmsAdminController")
+@Api(tags = "UmsAdminController", description = "用户管理")
 @Controller
 @RequestMapping("/admin")
 @Slf4j

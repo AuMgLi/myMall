@@ -18,6 +18,6 @@ public class OrderTimeoutCancelTask {
     @Scheduled(cron = "0 0/10 * ? * ?")
     private void cancelTimeoutOrder() {
         // TODO: 2019/5/3 此处应调用取消订单的方法，具体查看mall项目源码
-        log.info("订单超时，已取消");
+//        log.info("订单超时，已取消");
     }
 }

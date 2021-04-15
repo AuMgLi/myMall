@@ -18,11 +18,24 @@ spring:
         max-idle: 8
         min-idle: 0
     timeout: 3000ms
+  rabbitmq:
+    host: localhost
+    port: 5672
+    virtual-host: /mall
+    username: mall
+    password: admin
+    publisher-confirms: true  #如果对异步消息需要回调必须设置为true
+    queue:
+      name:
+        cancelOrder: cancelOrderQueue
 
 mybatis:
   mapper-locations:
     - classpath:mapper/*.xml
     - classpath*:com/**/mapper/*.xml
+
+pagehelper:
+  help-dialect: mysql
 
 redis:
   database: 0
@@ -44,14 +57,3 @@ jwt:
 logging:
   level:
     ROOT: INFO
-
-rabbitmq:
-  host: localhost
-  port: 5672
-  virtual-host: /mall
-  username: mall
-  password: admin
-  publisher-confirms: true  #如果对异步消息需要回调必须设置为true
-  queue:
-    name:
-      cancelOrder: cancelOrderQueue
